@@ -1,4 +1,4 @@
-(asdf:defsystem "conway-ff"
+(asdf:defsystem "conway-ff-api"
 	:description "Simple app for conway's class"
 	:version "0.0.1"
 	:depends-on ("hunchentoot" "easy-routes" "jonathan")
