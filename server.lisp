@@ -48,7 +48,6 @@
                                             :decorators (@json @allow-origin)) ()
   (jonathan.encode:to-json '(:name "Common Lisp" :born 1984 :impls (SBCL KCL))))
 
-
 (easy-routes:defroute name ("/foo/:x") (y &get z)
   (format nil "x: ~a y: ~a z: ~a" x y z))
 
