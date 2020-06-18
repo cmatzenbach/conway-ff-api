@@ -21,10 +21,10 @@ Build the docker image
 	
 Now run the newly built image to make your container
 
-    sudo docker run -ti --publish 5000:5000 --publish 4005:4005  --name
+    sudo docker run -ti --publish 5000:5000 --publish 4005:4005 --name
 	conway-ff-api conway-ff-api:1.0
 
-Now you can go to http://localhost:4246 to see the server running on the docker container
+Now you can go to http://localhost:5000 to see the server running on the docker container
 
 ## Messing around with the live server in emacs (via swank/SLIME)
 
@@ -47,6 +47,6 @@ testing and debugging, but make sure to copy over your code if you want it to re
 ## Killing the server
 
 To get rid of the running docker container:
-<pre><code>sudo docker rm --force simple-sbcl</code></pre>
+<pre><code>sudo docker rm --force conway-ff-api</code></pre>
 
 	

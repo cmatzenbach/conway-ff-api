@@ -43,7 +43,7 @@ RUN ln -s /src/conway-ff-api/conway-ff-api.asd ~/quicklisp/local-projects/conway
 RUN sbcl --noinform --non-interactive --eval '(ql:quickload :conway-ff-api)'
 
 # Expose the port that hunchentoot is listening on
-EXPOSE 4246
+EXPOSE 5000
 # Expose the port that swank is listening on
 EXPOSE 4005
 

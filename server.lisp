@@ -8,7 +8,7 @@
   (stop-server)
   (hunchentoot:start (setf *acceptor*
                (make-instance 'easy-routes:easy-routes-acceptor
-                              :port 4246))))
+                              :port 5000))))
 
 ;; function to stop server
 (defun stop-server ()
