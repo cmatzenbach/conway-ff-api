@@ -36,7 +36,7 @@ and bind to localhost and port 4005 when prompted for each.
 
 Now you must ensure you are in the correct package - you should see **CL-USER>** on
 the side, meaning you are in the standard Common Lisp package. If you wanted to
-add a new route (or edit an existing one), in the REPL type *,* which will bring
+add a new route (or edit an existing one), in the REPL type **,** (comma) which will bring
 up a new menu - type in and select *change-package*. Then type the name of the
 package you want to edit (in our case, the SERVER package - the names will all
 be capitalized) and you will see the REPL change to SERVER>. Hooray! Time to
