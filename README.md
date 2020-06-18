@@ -29,8 +29,9 @@ Now you can go to http://localhost:4246 to see the server running on the docker 
 ## Messing around with the live server in emacs (via swank/SLIME)
 
 In Emacs run <pre><code>M-x slime-connect</code></pre>
-In Spacemacs run <code><pre>spc spc slime-connect</code></pre>
-and bind to localhost and port 4005 when prompted for each.
+In Spacemacs run <pre><code>spc spc slime-connect</code></pre>
+and bind to localhost and port 4005 when prompted for each. Then ensure you are
+in the correct package and hack away! (Just like NASA did to a $100M piece of hardware that was 100 million miles away :) )
 
 ## Killing the server
 
