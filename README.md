@@ -42,7 +42,7 @@ package you want to edit (in our case, the SERVER package - the names will all
 be capitalized) and you will see the REPL change to **SERVER>**. Hooray! Time to
 hack away! Any code you put in there will be added to the running LISP
 container, **but will not be saved after it is closed**. This is excellent for
-testing and debugging, but make sure to copy over your code if you want it to remain in the source. This is just like what NASA did to a $100M piece of hardware that was 100 million miles away :) )
+testing and debugging, but make sure to copy over your code if you want it to remain in the source. This is just like what NASA did to a $100M piece of hardware that was 100 million miles away :)
 
 ## Killing the server
 
