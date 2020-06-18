@@ -47,6 +47,6 @@ testing and debugging, but make sure to copy over your code if you want it to re
 ## Killing the server
 
 To get rid of the running docker container:
-    sudo docker rm --force simple-sbcl
+<pre><code>sudo docker rm --force simple-sbcl</code></pre>
 
 	
