@@ -1,23 +1,11 @@
-(defpackage :server
-	(:use cl)
-	(:export
-   #:start-server
-   #:stop-server))
-
 (in-package :server)
-
-;; load dependenciesfor teseting in slime, will be compiled in asdf and shouldn't be re-ran
-;; (ql:quickload :hunchentoot)
-;; (ql:quickload :hunchentoot-test)
-;; (ql:quickload :easy-routes)
-;; (ql:quickload :jonathan)
 
 ;; create variable to store acceptor
 (defvar *acceptor* nil)
 
 ;; start server
 (defun start-server ()
-  (server:stop-server)
+  (stop-server)
   (hunchentoot:start (setf *acceptor*
                (make-instance 'easy-routes:easy-routes-acceptor
                               :port 4246))))
@@ -26,7 +14,7 @@
 (defun stop-server ()
   (when *acceptor*
     (when (hunchentoot:started-p *acceptor*)
-          (hunchentoot:stop *acceptor*))))
+      (hunchentoot:stop *acceptor*))))
 
 ;; try to set global server settings here
 ;; (setf (hunchentoot:header-out "Access-Control-Allow-Origin") "*")
