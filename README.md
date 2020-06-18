@@ -39,7 +39,7 @@ the side, meaning you are in the standard Common Lisp package. If you wanted to
 add a new route (or edit an existing one), in the REPL type **,** (comma) which will bring
 up a new menu - type in and select *change-package*. Then type the name of the
 package you want to edit (in our case, the SERVER package - the names will all
-be capitalized) and you will see the REPL change to SERVER>. Hooray! Time to
+be capitalized) and you will see the REPL change to **SERVER>**. Hooray! Time to
 hack away! Any code you put in there will be added to the running LISP
 container, **but will not be saved after it is closed**. This is excellent for
 testing and debugging, but make sure to copy over your code if you want it to remain in the source. This is just like what NASA did to a $100M piece of hardware that was 100 million miles away :) )
