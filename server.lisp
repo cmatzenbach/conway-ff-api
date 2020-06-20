@@ -45,6 +45,14 @@
           :while row
           :do (format t "~A~%" row))))
 
+(easy-routes:defroute testlogin ("/testlogin") ()
+  (dbi:with-connection (db:*connection*)
+    (let* ((query (dbi:prepare conn "SELECT * FROM Users"))
+           (query (dbi:execute query)))
+      (loop for row = (dbi:fetch query)
+            while row
+            do (format t "~A~%" row)))))
+
 ;; works with hunchentoot easy-handler style syntax
 (easy-routes:defroute myuser ("/myuser") ()
   (dbi:fetch-all (dbi:execute (dbi:prepare db:*connection* "SELECT * FROM Users WHERE username = ?") "cmatzenbach")))
