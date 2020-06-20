@@ -36,6 +36,19 @@
                                             :decorators (@json @allow-origin)) ()
   (jonathan.encode:to-json '(:name "Common Lisp" :born 1984 :impls (SBCL KCL))))
 
+;; FINALLY got this to work with easy-routes, still same undefined func error as route below
+(easy-routes:defroute myusername ("/myusername" :method :get
+                                                :decorators (@db @html)) ()
+  (let* ((res (dbi:prepare db:*connection* "SELECT * FROM Users WHERE username = ?"))
+         (res (dbi:execute res "cmatzenbach")))
+    (loop :for row = (dbi:fetch res)
+          :while row
+          :do (format t "~A~%" row))))
+
+;; works with hunchentoot easy-handler style syntax
+(easy-routes:defroute myuser ("/myuser") ()
+  (dbi:fetch-all (dbi:execute (dbi:prepare db:*connection* "SELECT * FROM Users WHERE username = ?") "cmatzenbach")))
+
 (easy-routes:defroute name ("/foo/:x") (y &get z)
   (format nil "x: ~a y: ~a z: ~a" x y z))
 
@@ -63,4 +76,12 @@
 ;; custom decorator to set Access-Control-Allow-Origin
 (defun @allow-origin (next)
   (setf (hunchentoot:header-out :Access-Control-Allow-Origin hunchentoot:*reply*) "*")
+  (funcall next))
+
+(defun @db (next)
+  (db:*connection*
+    (funcall next)))
+
+(defun @html (next)
+  (setf (hunchentoot:content-type*) "text/html")
   (funcall next))
