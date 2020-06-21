@@ -36,24 +36,36 @@
                                             :decorators (@json @allow-origin)) ()
   (jonathan.encode:to-json '(:name "Common Lisp" :born 1984 :impls (SBCL KCL))))
 
-;; FINALLY got this to work with easy-routes, still same undefined func error as route below
-(easy-routes:defroute myusername ("/myusername" :method :get
-                                                :decorators (@db @html)) ()
-  (let* ((res (dbi:prepare db:*connection* "SELECT * FROM Users WHERE username = ?"))
-         (res (dbi:execute res "cmatzenbach")))
-    (loop :for row = (dbi:fetch res)
-          :while row
-          :do (format t "~A~%" row))))
-
-(easy-routes:defroute testlogin ("/testlogin") ()
-  (dbi:with-connection (db:*connection*)
+;; of course this  works but the loop example from the README doesn't
+(easy-routes:defroute testgetdata ("/testgetdata" :method :get) ()
+  (dbi:with-connection (conn :mysql :database-name "fantasy_football" :host "conway-ff1.cctpeqxowyn7.us-east-2.rds.amazonaws.com" :port 3306 :username "matzy" :password "Paintitred1")
     (let* ((query (dbi:prepare conn "SELECT * FROM Users"))
            (query (dbi:execute query)))
-      (loop for row = (dbi:fetch query)
-            while row
-            do (format t "~A~%" row)))))
+      (format nil "~a" (dbi:fetch query)))))
+      ;; (loop for row = (dbi:fetch query)
+      ;;       while row
+      ;;       do (format nil "~A~%" row))
+      
 
-;; works with hunchentoot easy-handler style syntax
+;; this does return the data in a standard list, but calls an error about *connection*
+;; no longer throws error about *connection* and returns 200, but doesn't have any data in resp
+(easy-routes:defroute myusername ("/myusername") ()
+  (let* ((query (dbi:prepare db:*connection* "SELECT * FROM Users WHERE username = ?"))
+         (query (dbi:execute query "cmatzenbach")))
+    (loop for row = (dbi:fetch query)
+          while row
+          do (format nil "~a~%" row))))
+
+;; probably ideal query response, but persistent connection required, so prob need funcs above
+;; also hangs for awhile - all in one go query relying on persistent connection
+(easy-routes:defroute myuser ("/myuser") ()
+  (dbi:fetch-all (dbi:execute (dbi:prepare db:*connection* "SELECT * FROM Users WHERE username = ?") "cmatzenbach")))
+
+;; format nil doesn't go to stdout, but rather prints to page (output stream?)
+(easy-routes:defroute printpath ("/print") (x y)
+  (format nil "~a   ~a" x y))
+
+;; works with hunchentoot easy-handler style syntax but get object back i think
 (easy-routes:defroute myuser ("/myuser") ()
   (dbi:fetch-all (dbi:execute (dbi:prepare db:*connection* "SELECT * FROM Users WHERE username = ?") "cmatzenbach")))
 
@@ -74,7 +86,8 @@
   (setf (hunchentoot:content-type*) "text/plain")
   ;; for now, print out that page is viewed, later store in database
   (incf *page-views*)
-  (format t "~d" *page-views*))
+  ;; TODO doesn't print to page for some reason
+  (format nil "~d" *page-views*))
 
 ;; decorators
 (defun @json (next)
@@ -86,9 +99,10 @@
   (setf (hunchentoot:header-out :Access-Control-Allow-Origin hunchentoot:*reply*) "*")
   (funcall next))
 
-(defun @db (next)
-  (db:*connection*
-    (funcall next)))
+;; TODO Figure out how to build this decorator with cl-di - example is for postmodern
+;; (defun @db (next)
+;;   (db:*connection*
+;;     (funcall next)))
 
 (defun @html (next)
   (setf (hunchentoot:content-type*) "text/html")
