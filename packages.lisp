@@ -5,4 +5,6 @@
    :stop-server))
 
 (defpackage :db
-	(:export *connection*))
+	(:export
+	 :connect-db
+	 :disconnect-db))

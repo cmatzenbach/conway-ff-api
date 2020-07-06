@@ -37,48 +37,46 @@
   (jonathan.encode:to-json '(:name "Common Lisp" :born 1984 :impls (SBCL KCL))))
 
 ;; of course this  works but the loop example from the README doesn't
-(easy-routes:defroute testgetdata ("/testgetdata" :method :get) ()
-  (dbi:with-connection (conn :mysql :database-name "fantasy_football" :host "conway-ff1.cctpeqxowyn7.us-east-2.rds.amazonaws.com" :port 3306 :username "matzy" :password "Paintitred1")
-    (let* ((query (dbi:prepare conn "SELECT * FROM Users"))
-           (query (dbi:execute query)))
-      (format nil "~a" (dbi:fetch query)))))
+;; (easy-routes:defroute testgetdata ("/testgetdata" :method :get) ()
+;;   (dbi:with-connection (conn :mysql :database-name "fantasy_football" :host "conway-ff1.cctpeqxowyn7.us-east-2.rds.amazonaws.com" :port 3306 :username "matzy" :password "Paintitred1")
+;;     (let* ((query (dbi:prepare conn "SELECT * FROM Users"))
+;;            (query (dbi:execute query)))
+;;       (format nil "~a" (dbi:fetch query)))))
 ;; (loop for row = (dbi:fetch query)
 ;;       while row
 ;;       do (format nil "~A~%" row))
 
 
 ;; FINALLY got it to work - does not look like it's opening extra connections either
-(easy-routes:defroute myusername ("/myusername" :method :get) ()
-  (let* ((query (dbi:prepare db:*connection* "SELECT * FROM Users WHERE username = ?"))
-         (results (dbi:execute query "cmatzenbach")))
-    (format nil "~a" (dbi:fetch results))))
+;; (easy-routes:defroute myusername ("/myusername" :method :get) ()
+;;   (let* ((query (dbi:prepare db:*connection* "SELECT * FROM Users WHERE username = ?"))
+;;          (results (dbi:execute query "cmatzenbach")))
+;;     (format nil "~a" (dbi:fetch results))))
 ;; (loop for row = (dbi:fetch query)
 ;;       while row
 ;;       do (format nil "~a~%" row))
 
 ;; second hack at it, from SO
-;; https://stackoverflow.com/questions/31745456/cl-dbi-query-mysql-from-sbcl-with-error-illegal-utf-8-character-starting-at-p
-(easy-routes:defroute myuser2 ("/testusertwo") ()
-  (setf query (dbi:prepare db:*connection*
-                           "SELECT * FROM Users"))
-  (setf result (dbi:execute query))
-  (loop for row = (dbi:fetch result)
-        while row
-        do (format t "~A~%" row)))
+;; ;; https://stackoverflow.com/questions/31745456/cl-dbi-query-mysql-from-sbcl-with-error-illegal-utf-8-character-starting-at-p
+;; (easy-routes:defroute myuser2 ("/testusertwo") ()
+;;   (setf query (dbi:prepare db:*connection*
+;;                            "SELECT * FROM Users"))
+;;   (setf result (dbi:execute query))
+;;   (loop for row = (dbi:fetch result)
+;;         while row
+;;         do (format t "~A~%" row)))
 
 ;; probably ideal query response, but persistent connection required, so prob need funcs above
 ;; also hangs for awhile - all in one go query relying on persistent connection
-(easy-routes:defroute createuser ("/createuser" :method :post) (&post user pass team)
-  ;; (type-of user)
-  (trace dbi:do-sql)
-  (dbi:do-sql db:*connection*
-    "INSERT INTO Users (username, password, team_name) VALUES (?, ?, ?)"
-    (list user pass team))
-  ;; (dbi:do-sql db:*connection*
-  ;;   "INSERT INTO Users (username, password, team_name) VALUES (?, ?, ?)"
-  ;;   (list 0))
-  (untrace dbi:do-sql)
-  (format nil " user: ~a | pass: ~a | team-two: ~a" user pass team))
+;; (easy-routes:defroute createuser ("/createuser" :method :post) (&post user pass team)
+;;   (setf (hunchentoot:content-type*) "text/plain")
+;;   (dbi:do-sql db:*connection*
+;;     "INSERT INTO Users (username, password, team_name) VALUES (?, ?, ?)"
+;;     (list user pass team))
+;;   ;; (dbi:do-sql db:*connection*
+;;   ;;   "INSERT INTO Users (username, password, team_name) VALUES (?, ?, ?)"
+;;   ;;   (list 0))
+;;   (format nil " user: ~a | pass: ~a | team-two: ~a" user pass team))
 
 ;; format nil doesn't go to stdout, but rather prints to page (output stream?)
 (easy-routes:defroute printpath ("/print") (x y)
@@ -96,8 +94,8 @@
 (easy-routes:defroute getvars ("/getvars") (x &get y z)
   (format nil "x: ~a  y: ~a  z: ~a" x y z))
 
-(easy-routes:defroute printconn ("/printconn") ()
-  (format nil "x: ~a" db:*connection*))
+;; (easy-routes:defroute printconn ("/printconn") ()
+;;   (format nil "x: ~a" db:*connection*))
 
 ;; route to store page views
 (easy-routes:defroute views ("/store_page_views") ()
