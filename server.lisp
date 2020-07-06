@@ -42,32 +42,47 @@
     (let* ((query (dbi:prepare conn "SELECT * FROM Users"))
            (query (dbi:execute query)))
       (format nil "~a" (dbi:fetch query)))))
-      ;; (loop for row = (dbi:fetch query)
-      ;;       while row
-      ;;       do (format nil "~A~%" row))
-      
+;; (loop for row = (dbi:fetch query)
+;;       while row
+;;       do (format nil "~A~%" row))
 
-;; this does return the data in a standard list, but calls an error about *connection*
-;; no longer throws error about *connection* and returns 200, but doesn't have any data in resp
-(easy-routes:defroute myusername ("/myusername") ()
+
+;; FINALLY got it to work - does not look like it's opening extra connections either
+(easy-routes:defroute myusername ("/myusername" :method :get) ()
   (let* ((query (dbi:prepare db:*connection* "SELECT * FROM Users WHERE username = ?"))
-         (query (dbi:execute query "cmatzenbach")))
-    (loop for row = (dbi:fetch query)
-          while row
-          do (format nil "~a~%" row))))
+         (results (dbi:execute query "cmatzenbach")))
+    (format nil "~a" (dbi:fetch results))))
+;; (loop for row = (dbi:fetch query)
+;;       while row
+;;       do (format nil "~a~%" row))
+
+;; second hack at it, from SO
+;; https://stackoverflow.com/questions/31745456/cl-dbi-query-mysql-from-sbcl-with-error-illegal-utf-8-character-starting-at-p
+(easy-routes:defroute myuser2 ("/testusertwo") ()
+  (setf query (dbi:prepare db:*connection*
+                           "SELECT * FROM Users"))
+  (setf result (dbi:execute query))
+  (loop for row = (dbi:fetch result)
+        while row
+        do (format t "~A~%" row)))
 
 ;; probably ideal query response, but persistent connection required, so prob need funcs above
 ;; also hangs for awhile - all in one go query relying on persistent connection
-(easy-routes:defroute myuser ("/myuser") ()
-  (dbi:fetch-all (dbi:execute (dbi:prepare db:*connection* "SELECT * FROM Users WHERE username = ?") "cmatzenbach")))
+(easy-routes:defroute createuser ("/createuser" :method :post) (&post user pass team)
+  ;; (type-of user)
+  (trace dbi:do-sql)
+  (dbi:do-sql db:*connection*
+    "INSERT INTO Users (username, password, team_name) VALUES (?, ?, ?)"
+    (list user pass team))
+  ;; (dbi:do-sql db:*connection*
+  ;;   "INSERT INTO Users (username, password, team_name) VALUES (?, ?, ?)"
+  ;;   (list 0))
+  (untrace dbi:do-sql)
+  (format nil " user: ~a | pass: ~a | team-two: ~a" user pass team))
 
 ;; format nil doesn't go to stdout, but rather prints to page (output stream?)
 (easy-routes:defroute printpath ("/print") (x y)
   (format nil "~a   ~a" x y))
-
-;; works with hunchentoot easy-handler style syntax but get object back i think
-(easy-routes:defroute myuser ("/myuser") ()
-  (dbi:fetch-all (dbi:execute (dbi:prepare db:*connection* "SELECT * FROM Users WHERE username = ?") "cmatzenbach")))
 
 (easy-routes:defroute name ("/foo/:x") (y &get z)
   (format nil "x: ~a y: ~a z: ~a" x y z))
@@ -80,6 +95,9 @@
 ;; test getting data from GET vars in url
 (easy-routes:defroute getvars ("/getvars") (x &get y z)
   (format nil "x: ~a  y: ~a  z: ~a" x y z))
+
+(easy-routes:defroute printconn ("/printconn") ()
+  (format nil "x: ~a" db:*connection*))
 
 ;; route to store page views
 (easy-routes:defroute views ("/store_page_views") ()
