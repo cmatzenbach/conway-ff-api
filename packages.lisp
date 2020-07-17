@@ -1,5 +1,3 @@
-(use-package :cl)
-
 (defpackage :server
 	(:use cl)
 	(:export
@@ -10,4 +8,5 @@
 	(:use cl)
 	(:export
 	 :connect-db
-	 :disconnect-db))
+	 :disconnect-db
+	 :add-user))
