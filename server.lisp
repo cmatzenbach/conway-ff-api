@@ -36,7 +36,12 @@
                                             :decorators (@json @allow-origin)) ()
   (jonathan.encode:to-json '(:name "Common Lisp" :born 1984 :impls (SBCL KCL))))
 
-;; of course this  works but the loop example from the README doesn't
+;; avoid constant connection - write a connection that works soely for
+;; this db request
+;; (previous exmaple that tried to loop over and format t results data ;; was removed via comments despite numerous attempts; it was an
+;; example the author posted on the guthub for how tdo this)
+;; NOTE: this could just have beeen me!
+
 ;; (easy-routes:defroute testgetdata ("/testgetdata" :method :get) ()
 ;;   (dbi:with-connection (conn :mysql :database-name "fantasy_football" :host "conway-ff1.cctpeqxowyn7.us-east-2.rds.amazonaws.com" :port 3306 :username "matzy" :password "Paintitred1")
 ;;     (let* ((query (dbi:prepare conn "SELECT * FROM Users"))
@@ -47,14 +52,21 @@
 ;;       do (format nil "~A~%" row))
 
 
+;; write roue that takes in given username and returns (all) data about user
+;; NOTE: We should discuss whether we should just take usenames or emails as well
+;; many sites sre moving towards the "your email is your username" or
+;; sometimes ttake either when doing auth
+
 ;; FINALLY got it to work - does not look like it's opening extra connections either
-;; (easy-routes:defroute myusername ("/myusername" :method :get) ()
+;; (easy-routes:defroute myusername ("/myusername" :method :geat) ()
 ;;   (let* ((query (dbi:prepare db:*connection* "SELECT * FROM Users WHERE username = ?"))
 ;;          (results (dbi:execute query "cmatzenbach")))
 ;;     (format nil "~a" (dbi:fetch results))))
 ;; (loop for row = (dbi:fetch query)
 ;;       while row
 ;;       do (format nil "~a~%" row))
+
+;; Another simpele SELECT example
 
 ;; second hack at it, from SO
 ;; ;; https://stackoverflow.com/questions/31745456/cl-dbi-query-mysql-from-sbcl-with-error-illegal-utf-8-character-starting-at-p
@@ -65,18 +77,6 @@
 ;;   (loop for row = (dbi:fetch result)
 ;;         while row
 ;;         do (format t "~A~%" row)))
-
-;; probably ideal query response, but persistent connection required, so prob need funcs above
-;; also hangs for awhile - all in one go query relying on persistent connection
-;; (easy-routes:defroute createuser ("/createuser" :method :post) (&post user pass team)
-;;   (setf (hunchentoot:content-type*) "text/plain")
-;;   (dbi:do-sql db:*connection*
-;;     "INSERT INTO Users (username, password, team_name) VALUES (?, ?, ?)"
-;;     (list user pass team))
-;;   ;; (dbi:do-sql db:*connection*
-;;   ;;   "INSERT INTO Users (username, password, team_name) VALUES (?, ?, ?)"
-;;   ;;   (list 0))
-;;   (format nil " user: ~a | pass: ~a | team-two: ~a" user pass team))
 
 ;; format nil doesn't go to stdout, but rather prints to page (output stream?)
 (easy-routes:defroute printpath ("/print") (x y)
