@@ -1,5 +1,5 @@
 # Chose this ubuntu base image because its small and optimized for Docker(ness)
-FROM phusion/baseimage
+FROM phusion/baseimage:latest-amd64
 
 # Installing what I need from ubuntu to do the job.
 # - wget to download stuff from the web
